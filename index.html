@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EcoSmart Waste</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f5ef;--card:#fff;--ink:#14231c;--mute:#5c6b62;--line:#d8e0d6;--g:#1f7a5a;--gd:#12503b;--sun:#e8a317;--red:#c8402f;--map:#e6ede2;--bld:#cfdccb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a15;--card:#182620;--ink:#e8f0ea;--mute:#98aa9f;--line:#2a3b33;--g:#3fb389;--gd:#2a8a68;--map:#1d2e26;--bld:#2a4036}}
+:root[data-theme="dark"]{--bg:#0f1a15;--card:#182620;--ink:#e8f0ea;--mute:#98aa9f;--line:#2a3b33;--g:#3fb389;--gd:#2a8a68;--map:#1d2e26;--bld:#2a4036}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Instrument Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;margin:0;line-height:1.15}
+header{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--gd);color:#fff;flex-wrap:wrap}
+header h1{font-size:22px;flex:1;min-width:150px}
+.pts{background:var(--sun);color:#2b1d00;font-weight:600;padding:4px 10px;border-radius:99px}
+.hb{background:transparent;border:1px solid #ffffff80;color:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit}
+nav{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+nav button{border:0;background:none;color:var(--mute);padding:8px 12px;border-radius:8px;cursor:pointer;font:600 14px inherit;white-space:nowrap}
+nav button.on{background:var(--g);color:#fff}
+main{max-width:920px;margin:0 auto;padding:16px}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+label{display:block;font-weight:600;margin:10px 0 4px;font-size:14px}
+input,select,textarea{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+button.p{background:var(--g);color:#fff;border:0;border-radius:8px;padding:10px 16px;font:600 15px inherit;cursor:pointer;margin-top:12px}
+button.s{background:none;border:1px solid var(--g);color:var(--g);border-radius:8px;padding:6px 10px;font:600 13px inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--sun);outline-offset:1px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.map{width:100%;height:auto;border-radius:10px;background:var(--map);border:1px solid var(--line);display:block}
+.map.pick{cursor:crosshair}
+.mute{color:var(--mute);font-size:13px}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:var(--bld);color:var(--ink)}
+.st-Resolved{background:var(--g);color:#fff}.st-Inprogress{background:var(--sun);color:#2b1d00}.st-Assigned{background:#5b8def;color:#fff}.st-Received{background:var(--red);color:#fff}
+.steps{display:flex;gap:4px;margin:8px 0}.steps i{flex:1;height:5px;border-radius:3px;background:var(--line)}.steps i.d{background:var(--g)}
+.thumb{width:64px;height:64px;object-fit:cover;border-radius:8px;float:right;margin-left:10px}
+.stat{font:800 30px "Bricolage Grotesque",sans-serif}
+.bar{height:14px;background:var(--g);border-radius:4px}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse}td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top}
+.wet{border-left:5px solid var(--g)}.dry{border-left:5px solid #5b8def}.ewaste{border-left:5px solid var(--sun)}
+#np{display:none;position:fixed;right:12px;top:calc(env(safe-area-inset-top,0px) + 56px);width:min(320px,92vw);max-height:60vh;overflow:auto;z-index:9;box-shadow:0 8px 30px #0005}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;display:none;z-index:10}
+@media(prefers-reduced-motion:no-preference){.bar{transition:width .5s}}
+</style></head><body>
+<header><h1>EcoSmart Waste</h1><span class="pts" id="pts"></span>
+<button class="hb" id="role" title="Switch between citizen and admin views"></button>
+<button class="hb" id="bell" aria-label="Notifications"></button></header>
+<div class="card" id="np"></div>
+<nav id="nav"></nav>
+<main>
+<section id="v-report"><div class="card"><h2>Report garbage</h2><p class="mute">Snap it, pin it on the map, and the team gets the alert. You earn 10 points.</p>
+<div class="grid"><div>
+<label for="rt">What's the problem?</label><select id="rt"><option>Overflowing bin</option><option>Illegal dumping</option><option>Dirty washroom</option><option>Bad smell / drain</option></select>
+<label for="rd">Details</label><textarea id="rd" rows="3" placeholder="Bin near the library gate has been full since morning"></textarea>
+<label for="rp">Photo</label><input type="file" id="rp" accept="image/*" capture="environment"><img id="prev" class="thumb" alt="" hidden style="float:none;margin-top:8px;width:100px;height:100px">
+<button class="s" id="gps" style="margin-top:10px">Use my GPS</button> <span class="mute" id="gpst"></span>
+</div><div><label>Tap the map to pin the spot</label><div id="pickmap"></div><div class="mute" id="pinfo">No location picked yet.</div></div></div>
+<button class="p" id="sub">Submit report</button></div></section>
+
+<section id="v-guide"><div class="card"><h2>Which bin does it go in?</h2>
+<label for="gq">Type an item (e.g. banana peel, charger, pizza box)</label><input id="gq" placeholder="Search an item…"><div id="gres" style="margin-top:10px"></div></div>
+<div class="grid" id="gcards"></div></section>
+
+<section id="v-sched"><div class="grid"><div class="card"><h2>Regular collection</h2><table id="rota"></table></div>
+<div class="card"><h2>Book a special pickup</h2><p class="mute">For e-waste, bulk cardboard, or hostel clear-outs.</p>
+<label for="bz">Zone</label><select id="bz"></select><label for="bt">Waste type</label><select id="bt"><option>E-waste</option><option>Dry / recyclable</option><option>Wet / compost</option></select>
+<label for="bd">Date</label><input type="date" id="bd"><button class="p" id="book">Book pickup</button></div></div>
+<div class="card"><h3>Your bookings</h3><div id="books" class="mute">No bookings yet.</div></div></section>
+
+<section id="v-track"><div class="card"><h2>Your complaints</h2><div id="mine"></div></div></section>
+
+<section id="v-rew"><div class="card"><h2>Rewards</h2><p>You have <b id="rp2"></b> points. <span class="mute">Earn them by reporting, logging correct disposal, and booking pickups.</span></p><div class="grid" id="rews"></div></div>
+<div class="card"><h3>Leaderboard</h3><div id="lb"></div></div></section>
+
+<section id="v-admin"><div class="grid" id="kpi"></div>
+<div class="card"><div class="row"><h2>Garbage hotspot heatmap</h2><span class="mute">Open complaints only</span></div><div id="heat"></div></div>
+<div class="grid"><div class="card"><h3>Reports by type</h3><div id="chart"></div></div>
+<div class="card"><h3>Pickup bookings</h3><div id="abooks" class="mute"></div></div></div>
+<div class="card"><h3>Complaint queue</h3><div style="overflow-x:auto"><table id="queue"></table></div></div></section>
+</main><div id="toast" role="status"></div>
+<script>
+const $=s=>document.querySelector(s),ST=["Received","Assigned","In progress","Resolved"],cls=s=>"st-"+s.replace(" ","");
+const ZONES=[["Hostel Block A",60,50],["Library",150,45],["Canteen",235,60],["Sports Ground",70,140],["Main Gate",160,165],["Admin Block",245,140]];
+const ROTA=[["Hostel Block A","Mon, Thu","Wet + Dry"],["Library","Tue, Fri","Dry"],["Canteen","Daily","Wet"],["Sports Ground","Wed","Dry"],["Main Gate","Tue, Sat","Wet + Dry"],["Admin Block","Mon, Fri","Dry + E-waste"]];
+const ITEMS={"banana peel":"wet","food":"wet","vegetable":"wet","leaves":"wet","tea":"wet","coffee":"wet","egg":"wet","paper":"dry","cardboard":"dry","pizza box":"dry","plastic":"dry","bottle":"dry","wrapper":"dry","can":"dry","glass":"dry","cloth":"dry","charger":"ewaste","battery":"ewaste","phone":"ewaste","earphones":"ewaste","cable":"ewaste","bulb":"ewaste","laptop":"ewaste","mouse":"ewaste"};
+const GUIDE={wet:["Wet (green bin)","Food scraps, peels, leaves, tea bags. Goes to compost.","Keep it free of plastic bags."],dry:["Dry (blue bin)","Paper, plastic, metal, glass, cloth. Goes to recyclers.","Rinse food containers first."],ewaste:["E-waste (yellow bin)","Batteries, chargers, phones, bulbs, cables.","Never mix with regular bins; book a special pickup."]};
+const REWARDS=[["Canteen coupon ₹20",50],["Notebook",80],["Reusable bottle",150],["Plant sapling",40]];
+let S={pts:20,notes:[],reps:[],books:[],red:[],id:10,role:"user",tab:"report"};
+try{const x=localStorage.getItem("ecosmart");if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
+if(!S.reps.length){[[62,52,"Overflowing bin","Received"],[70,58,"Overflowing bin","Assigned"],[58,46,"Illegal dumping","Received"],[236,62,"Bad smell / drain","In progress"],[228,66,"Overflowing bin","Received"],[160,160,"Illegal dumping","Received"],[150,50,"Dirty washroom","Resolved"],[76,138,"Illegal dumping","Assigned"]].forEach((r,i)=>S.reps.push({id:i+1,x:r[0],y:r[1],type:r[2],desc:"Reported by a student",status:r[3],by:"Others",ts:Date.now()-i*36e5}))}
+const save=()=>{try{localStorage.setItem("ecosmart",JSON.stringify(S))}catch(e){}};
+const toast=m=>{const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display="none",2600)};
+const note=m=>{S.notes.unshift({m,t:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),n:1});save()};
+const add=(n,why)=>{S.pts+=n;toast("+"+n+" points: "+why)};
+const near=(x,y)=>ZONES.map(z=>[z[0],Math.hypot(z[1]-x,z[2]-y)]).sort((a,b)=>a[1]-b[1])[0][0];
+function svg(heat,pin){let s='<svg class="map'+(pin?" pick":"")+'" viewBox="0 0 300 200" id="'+(heat?"hm":"pm")+'"><defs><radialGradient id="hg"><stop offset="0" stop-color="#c8402f" stop-opacity=".55"/><stop offset="1" stop-color="#c8402f" stop-opacity="0"/></radialGradient></defs>';
+s+='<path d="M0 100H300M150 0V200" stroke="var(--line)" stroke-width="10" opacity=".7"/>';
+ZONES.forEach(z=>{s+='<rect x="'+(z[1]-26)+'" y="'+(z[2]-16)+'" width="52" height="32" rx="5" fill="var(--bld)"/><text x="'+z[1]+'" y="'+(z[2]+4)+'" font-size="8" text-anchor="middle" fill="var(--ink)">'+z[0]+'</text>'});
+if(heat)S.reps.filter(r=>r.status!="Resolved").forEach(r=>s+='<circle cx="'+r.x+'" cy="'+r.y+'" r="26" fill="url(#hg)"/>');
+if(pin&&S.pin)s+='<circle cx="'+S.pin[0]+'" cy="'+S.pin[1]+'" r="6" fill="var(--red)" stroke="#fff" stroke-width="2"/>';
+return s+"</svg>"}
+function drawPick(){$("#pickmap").innerHTML=svg(0,1);$("#pm").onclick=e=>{const r=e.currentTarget.getBoundingClientRect();S.pin=[Math.round((e.clientX-r.left)/r.width*300),Math.round((e.clientY-r.top)/r.height*200)];drawPick();$("#pinfo").textContent="Pinned near "+near(S.pin[0],S.pin[1])+"."}}
+function steps(s){const i=ST.indexOf(s);return '<div class="steps">'+ST.map((_,k)=>'<i class="'+(k<=i?"d":"")+'"></i>').join("")+"</div>"}
+function render(){
+$("#pts").textContent=S.pts+" pts";$("#role").textContent=S.role=="admin"?"Admin view":"Citizen view";
+const un=S.notes.filter(n=>n.n).length;$("#bell").textContent="🔔"+(un?" "+un:"");
+$("#np").innerHTML="<h3>Notifications</h3>"+(S.notes.length?S.notes.map(n=>'<p style="margin:8px 0"><span class="mute">'+n.t+"</span><br>"+n.m+"</p>").join(""):'<p class="mute">Nothing yet. Submit a report or book a pickup.</p>');
+const tabs=S.role=="admin"?[["admin","Dashboard"],["track","Complaints"],["sched","Schedule"]]:[["report","Report"],["guide","Segregation guide"],["sched","Pickups"],["track","My complaints"],["rew","Rewards"]];
+if(!tabs.some(t=>t[0]==S.tab))S.tab=tabs[0][0];
+$("#nav").innerHTML=tabs.map(t=>'<button class="'+(t[0]==S.tab?"on":"")+'" data-t="'+t[0]+'">'+t[1]+"</button>").join("");
+document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id=="v-"+S.tab));
+if(S.tab=="report")drawPick();
+$("#mine").innerHTML=(S.role=="admin"?S.reps:S.reps.filter(r=>r.by=="You")).map(r=>'<div class="card">'+(r.photo?'<img class="thumb" alt="Report photo" src="'+r.photo+'">':"")+'<div class="row"><b>#'+r.id+" "+r.type+'</b><span class="tag '+cls(r.status)+'">'+r.status+"</span></div>"+steps(r.status)+'<div class="mute">Near '+near(r.x,r.y)+" · "+new Date(r.ts).toLocaleDateString()+"</div><div>"+r.desc+"</div></div>").join("")||'<p class="mute">No complaints yet. File one from the Report tab.</p>';
+$("#rp2").textContent=S.pts;
+$("#rews").innerHTML=REWARDS.map((r,i)=>'<div class="card" style="margin:0"><b>'+r[0]+'</b><div class="mute">'+r[1]+' pts</div><button class="s" data-r="'+i+'" '+(S.pts<r[1]?"disabled":"")+' style="margin-top:8px">Redeem</button></div>').join("");
+const lb=[["Hostel Block B",210],["Library Wing",180],["You",S.pts],["Block C",95]].sort((a,b)=>b[1]-a[1]);
+$("#lb").innerHTML=lb.map((l,i)=>'<div class="row" style="padding:5px 0"><span>'+(i+1)+". "+l[0]+"</span><b>"+l[1]+"</b></div>").join("");
+$("#rota").innerHTML="<tr><th>Zone</th><th>Days</th><th>Waste</th></tr>"+ROTA.map(r=>"<tr><td>"+r.join("</td><td>")+"</td></tr>").join("");
+const bl=S.books.map(b=>"<div>"+b.date+" · "+b.zone+" · "+b.type+"</div>").join("");
+$("#books").innerHTML=bl||"No bookings yet.";$("#abooks").innerHTML=bl||"No bookings yet.";
+if(S.tab=="admin"){
+const open=S.reps.filter(r=>r.status!="Resolved").length,ty={};S.reps.forEach(r=>ty[r.type]=(ty[r.type]||0)+1);
+$("#kpi").innerHTML=[["Total reports",S.reps.length],["Open",open],["Resolved",S.reps.length-open],["Pickups booked",S.books.length]].map(k=>'<div class="card" style="margin:0"><div class="stat">'+k[1]+'</div><div class="mute">'+k[0]+"</div></div>").join("");
+$("#heat").innerHTML=svg(1,0);
+const mx=Math.max(...Object.values(ty));$("#chart").innerHTML=Object.entries(ty).map(([k,v])=>'<div class="mute">'+k+" ("+v+')</div><div class="bar" style="width:'+v/mx*100+'%"></div>').join("");
+$("#queue").innerHTML="<tr><th>#</th><th>Issue</th><th>Where</th><th>Status</th><th></th></tr>"+S.reps.filter(r=>r.status!="Resolved").map(r=>"<tr><td>"+r.id+"</td><td>"+r.type+"</td><td>"+near(r.x,r.y)+'</td><td><span class="tag '+cls(r.status)+'">'+r.status+'</span></td><td><button class="s" data-a="'+r.id+'">Advance</button></td></tr>').join("")}
+$("#bz").innerHTML=ZONES.map(z=>"<option>"+z[0]+"</option>").join("");save()}
+function guideRes(q){q=q.toLowerCase().trim();if(!q)return"";const k=Object.keys(ITEMS).find(k=>q.includes(k)||k.includes(q));
+if(!k)return'<p class="mute">Not sure about that one. When in doubt, keep it out of the wet bin and ask the sanitation desk.</p>';
+const g=GUIDE[ITEMS[k]];return'<div class="card '+ITEMS[k]+'" style="margin:0"><b>'+k+" → "+g[0]+"</b><div>"+g[2]+'</div><button class="s" data-log="1" style="margin-top:8px">I disposed it correctly (+2)</button></div>'}
+document.addEventListener("click",e=>{const t=e.target;
+if(t.dataset.t){S.tab=t.dataset.t;render()}
+if(t.id=="role"){S.role=S.role=="admin"?"user":"admin";render()}
+if(t.id=="bell"){const n=$("#np");n.style.display=n.style.display=="block"?"none":"block";S.notes.forEach(x=>x.n=0);$("#bell").textContent="🔔"}
+if(t.dataset.r){const r=REWARDS[t.dataset.r];if(S.pts>=r[1]){S.pts-=r[1];note("Redeemed: "+r[0]+". Show this at the eco desk.");toast("Redeemed "+r[0]);render()}}
+if(t.dataset.log){add(2,"correct disposal");render()}
+if(t.dataset.a){const r=S.reps.find(x=>x.id==t.dataset.a);r.status=ST[ST.indexOf(r.status)+1];if(r.by=="You"){note("Complaint #"+r.id+" is now "+r.status+".");if(r.status=="Resolved")S.pts+=5}render()}
+if(t.id=="gps"){navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>{$("#gpst").textContent=p.coords.latitude.toFixed(4)+", "+p.coords.longitude.toFixed(4);S.gps=$("#gpst").textContent},()=>$("#gpst").textContent="GPS blocked. Pin the spot on the map instead."):$("#gpst").textContent="GPS not available."}
+if(t.id=="sub"){if(!S.pin){toast("Pin the location on the map first.");return}
+const r={id:++S.id,x:S.pin[0],y:S.pin[1],type:$("#rt").value,desc:$("#rd").value||"No details added",status:"Received",by:"You",ts:Date.now(),photo:S.tmpPhoto||"",gps:S.gps||""};
+S.reps.unshift(r);note("Complaint #"+r.id+" received near "+near(r.x,r.y)+".");S.pin=null;S.tmpPhoto="";$("#rd").value="";$("#prev").hidden=true;$("#rp").value="";$("#pinfo").textContent="No location picked yet.";add(10,"report filed");S.tab="track";render()}
+if(t.id=="book"){const d=$("#bd").value;if(!d){toast("Pick a date first.");return}
+S.books.unshift({date:d,zone:$("#bz").value,type:$("#bt").value});note("Pickup confirmed for "+d+" at "+$("#bz").value+".");add(5,"pickup booked");render()}});
+$("#gq").oninput=e=>$("#gres").innerHTML=guideRes(e.target.value);
+$("#gcards").innerHTML=Object.keys(GUIDE).map(k=>'<div class="card '+k+'" style="margin:0"><h3>'+GUIDE[k][0]+"</h3><p>"+GUIDE[k][1]+"</p><div class=mute>"+GUIDE[k][2]+"</div></div>").join("");
+$("#rp").onchange=e=>{const f=e.target.files[0];if(!f)return;const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas"),k=Math.min(1,240/im.width);c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);S.tmpPhoto=c.toDataURL("image/jpeg",.6);$("#prev").src=S.tmpPhoto;$("#prev").hidden=false};im.src=fr.result};fr.readAsDataURL(f)};
+render();
+</script></body></html>
